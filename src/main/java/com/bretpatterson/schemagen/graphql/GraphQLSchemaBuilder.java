@@ -2,7 +2,6 @@ package com.bretpatterson.schemagen.graphql;
 
 import com.bretpatterson.schemagen.graphql.annotations.GraphQLController;
 import com.bretpatterson.schemagen.graphql.annotations.GraphQLTypeMapper;
-import com.bretpatterson.schemagen.graphql.datafetchers.DefaultMethodDataFetcher;
 import com.bretpatterson.schemagen.graphql.datafetchers.IDataFetcher;
 import com.bretpatterson.schemagen.graphql.impl.GraphQLObjectMapper;
 import com.bretpatterson.schemagen.graphql.impl.SimpleTypeFactory;
