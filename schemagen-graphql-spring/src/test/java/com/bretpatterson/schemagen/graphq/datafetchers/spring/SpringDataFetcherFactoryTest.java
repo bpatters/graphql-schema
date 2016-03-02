@@ -22,7 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
@@ -54,7 +53,7 @@ public class SpringDataFetcherFactoryTest {
 																   Optional.<ITypeNamingStrategy>absent(),
 																   Optional.<IDataFetcherFactory>absent(),
 																   Optional.<Class<? extends IDataFetcher>>absent(),
-																   ImmutableList.<Class>of());
+																   ImmutableList.<Class<?>>of());
 		SpringDataFetcherFactory factory = new SpringDataFetcherFactory(context);
 
 		IDataFetcher dataFetcher = factory.newMethodDataFetcher(objectMapper, this, this.getClass().getMethod("getDataNoSpring", String.class, Integer.class), "dataNoSpring", DefaultMethodDataFetcher.class);
@@ -79,7 +78,7 @@ public class SpringDataFetcherFactoryTest {
 																   Optional.<ITypeNamingStrategy>absent(),
 																   Optional.<IDataFetcherFactory>absent(),
 																   Optional.<Class<? extends IDataFetcher>>absent(),
-																   ImmutableList.<Class>of());
+																   ImmutableList.<Class<?>>of());
 		SpringDataFetcherFactory factory = new SpringDataFetcherFactory(context);
 		EchoBean echoBean = (EchoBean) context.getBean("echoBean");
 
@@ -105,7 +104,7 @@ public class SpringDataFetcherFactoryTest {
 				Optional.<ITypeNamingStrategy> absent(),
 				Optional.<IDataFetcherFactory> absent(),
 				Optional.<Class<? extends IDataFetcher>> absent(),
-				ImmutableList.<Class> of());
+				ImmutableList.<Class<?>>of());
 		SpringDataFetcherFactory factory = new SpringDataFetcherFactory(context);
 		EchoBean echoBean = (EchoBean) context.getBean("echoBean");
 

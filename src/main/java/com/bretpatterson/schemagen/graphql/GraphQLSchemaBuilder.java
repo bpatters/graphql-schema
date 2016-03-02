@@ -2,7 +2,6 @@ package com.bretpatterson.schemagen.graphql;
 
 import com.bretpatterson.schemagen.graphql.annotations.GraphQLController;
 import com.bretpatterson.schemagen.graphql.annotations.GraphQLTypeMapper;
-import com.bretpatterson.schemagen.graphql.datafetchers.DefaultMethodDataFetcher;
 import com.bretpatterson.schemagen.graphql.datafetchers.IDataFetcher;
 import com.bretpatterson.schemagen.graphql.impl.GraphQLObjectMapper;
 import com.bretpatterson.schemagen.graphql.impl.SimpleTypeFactory;
@@ -56,7 +55,7 @@ public class GraphQLSchemaBuilder {
 	private Optional<IDataFetcherFactory> dataFetcherFactory = Optional.absent();
 	private Optional<Class<? extends IDataFetcher>> defaultMethodDataFetcher = Optional.absent();
 	private RelayDefaultNodeHandler.Builder relayDefaultNodeHandler = RelayDefaultNodeHandler.builder();
-	private List<Class> relayNodeTypes = Lists.newArrayList();
+	private List<Class<?>> relayNodeTypes = Lists.newArrayList();
 	private ITypeFactory typeFactory = new SimpleTypeFactory();
 	private ClassLoader classLoader;
 	private ClassPath classPath;
@@ -169,9 +168,9 @@ public class GraphQLSchemaBuilder {
 		// install all of the default type mappers we include in our packages
 		ImmutableList.Builder<IGraphQLTypeMapper> builder = ImmutableList.builder();
 		try {
-			Set<Class> defaultTypeMappers = AnnotationUtils.getClassesWithAnnotation(GraphQLTypeMapper.class, IGraphQLTypeMapper.class.getPackage().getName())
+			Set<Class<?>> defaultTypeMappers = AnnotationUtils.getClassesWithAnnotation(GraphQLTypeMapper.class, IGraphQLTypeMapper.class.getPackage().getName())
 					.keySet();
-			for (Class typeMapper : defaultTypeMappers) {
+			for (Class<?> typeMapper : defaultTypeMappers) {
 				builder.add((IGraphQLTypeMapper) typeMapper.newInstance());
 			}
 

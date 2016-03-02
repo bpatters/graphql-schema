@@ -16,7 +16,8 @@ import java.util.TimeZone;
 @GraphQLTypeMapper(type=TimeZone.class)
 public class TimeZoneMapper implements IGraphQLTypeMapper {
 
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
 		return type == TimeZone.class;
 	}
 

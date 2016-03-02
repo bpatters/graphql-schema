@@ -220,10 +220,5 @@ public class GameController {
 		rv.setEdges(edges.build());
 
 		return rv;
-
-	}
-
-	private int getPageNumber(ConnectionCursor cursor) {
-		return Integer.parseInt(cursor.getValue());
 	}
 }

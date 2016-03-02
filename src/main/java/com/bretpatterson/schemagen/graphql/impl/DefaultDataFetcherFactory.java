@@ -42,7 +42,7 @@ public class DefaultDataFetcherFactory implements IDataFetcherFactory {
 			final Object targetObject,
 			final Method method,
 			final String fieldName,
-			final Class dataFetcher) {
+			final Class<? extends IDataFetcher> dataFetcher) {
 		IDataFetcher dataFetcherObject;
 		try {
 			dataFetcherObject = (IDataFetcher) dataFetcher.newInstance();

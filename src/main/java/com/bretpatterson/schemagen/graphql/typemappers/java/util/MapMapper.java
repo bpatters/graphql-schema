@@ -14,7 +14,6 @@ import graphql.schema.GraphQLOutputType;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -28,8 +27,9 @@ public class MapMapper implements IGraphQLTypeMapper {
 	public static final String KEY_NAME = "key";
 	public static final String VALUE_NAME = "value";
 
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class typeClass = graphQLObjectMapper.getClassFromType(type);
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+		Class<?> typeClass = graphQLObjectMapper.getClassFromType(type);
 		return Map.class.isAssignableFrom(typeClass);
 	}
 

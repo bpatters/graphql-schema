@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import graphql.schema.PropertyDataFetcher;
 
 /**
  * This converts all Maps into a List of Entries who's key/values are accessible
@@ -21,18 +20,19 @@ public class MapConverterDataFetcher implements IDataFetcher {
 		this.parentDataFetcher = parentDataFetcher;
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public Object get(DataFetchingEnvironment environment) {
-		Map rv = (Map) parentDataFetcher.get(environment);
+		Object rv = parentDataFetcher.get(environment);
 
 		if (rv == null) {
 			return ImmutableList.of();
 		}
-		Map<Object, Object> rvMap = (Map) rv;
+		Map<Object, Object> rvMap = (Map<Object, Object>) rv;
 		// build an accessible copy of the entries to ensure we can get them via property datafetcher
-		ImmutableList.Builder<Map.Entry> rvList = ImmutableList.builder();
+		ImmutableList.Builder<Map.Entry<Object, Object>> rvList = ImmutableList.builder();
 		for (final Map.Entry<Object, Object> entry : rvMap.entrySet()) {
-			rvList.add(new Entry(entry.getKey(), entry.getValue()));
+			rvList.add(new Entry<>(entry));
 		}
 		return rvList.build();
 	}
@@ -47,28 +47,27 @@ public class MapConverterDataFetcher implements IDataFetcher {
 	/**
 	 * This holds a Map.Entry instance that we use to hold the Map.Entry in maps that we have remapped to List<Entry> objects.
 	 */
-	public class Entry implements Map.Entry {
+	public class Entry<K, V> implements Map.Entry<K, V> {
+		private K key;
+		private V value;
 
-		Object key;
-		Object value;
-
-		public Entry(Object key, Object value) {
-			this.key = key;
-			this.value = value;
+		public Entry(Map.Entry<K, V> entry) {
+		    this.key = entry.getKey();
+		    this.value = entry.getValue();
 		}
 
 		@Override
-		public Object getKey() {
+		public K getKey() {
 			return key;
 		}
 
 		@Override
-		public Object getValue() {
+		public V getValue() {
 			return value;
 		}
 
 		@Override
-		public Object setValue(final Object value) {
+		public V setValue(final Object value) {
 			throw new IllegalAccessError("Not implemented");
 		}
 	}

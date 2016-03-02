@@ -44,7 +44,7 @@ public class Edge<T> {
 		if (o == null || getClass() != o.getClass())
 			return false;
 
-		Edge that = (Edge) o;
+		Edge<?> that = (Edge<?>) o;
 
 		return Objects.equals(node, that.node) && Objects.equals(cursor, that.cursor);
 

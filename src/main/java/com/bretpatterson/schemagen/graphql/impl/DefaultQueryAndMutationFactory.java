@@ -35,14 +35,15 @@ public class DefaultQueryAndMutationFactory implements IQueryFactory, IMutationF
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryAndMutationFactory.class);
 
-	public List<GraphQLFieldDefinition> newMethodMutationsForObject(IGraphQLObjectMapper graphQLObjectMapper,
+	@Override
+    public List<GraphQLFieldDefinition> newMethodMutationsForObject(IGraphQLObjectMapper graphQLObjectMapper,
 			Object targetObject) {
 		ImmutableList.Builder<GraphQLFieldDefinition> results = ImmutableList.builder();
 		Map<GraphQLMutation, Method> methodMap = AnnotationUtils.getMethodsWithAnnotation(targetObject.getClass(), GraphQLMutation.class);
 
 		for (Map.Entry<GraphQLMutation, Method> entry : methodMap.entrySet()) {
 			try {
-				Class dataFetcher = entry.getKey().dataFetcher();
+				Class<? extends IDataFetcher> dataFetcher = entry.getKey().dataFetcher();
 				if (AnnotationUtils.isNullValue(dataFetcher)) {
 					dataFetcher = graphQLObjectMapper.getDefaultMethodDataFetcher();
 				}
@@ -64,7 +65,7 @@ public class DefaultQueryAndMutationFactory implements IQueryFactory, IMutationF
 			Object targetObject,
 			String name,
 			Method method,
-			Class dataFetcherClass) {
+			Class<? extends IDataFetcher> dataFetcherClass) {
 		IDataFetcher dataFetcher = graphQLObjectMapper.getDataFetcherFactory().newMethodDataFetcher(graphQLObjectMapper,
 																									targetObject,
 																									method,
@@ -90,13 +91,14 @@ public class DefaultQueryAndMutationFactory implements IQueryFactory, IMutationF
 	 * @param targetObject the target object the DataFetcher will invoke the method on.
 	 * @return
 	 */
-	public List<GraphQLFieldDefinition> newMethodQueriesForObject(IGraphQLObjectMapper graphQLObjectMapper, Object targetObject) {
+	@Override
+    public List<GraphQLFieldDefinition> newMethodQueriesForObject(IGraphQLObjectMapper graphQLObjectMapper, Object targetObject) {
 		ImmutableList.Builder<GraphQLFieldDefinition> results = ImmutableList.builder();
 		Map<GraphQLQuery, Method> methodMap = AnnotationUtils.getMethodsWithAnnotation(targetObject.getClass(), GraphQLQuery.class);
 
 		for (Map.Entry<GraphQLQuery, Method> entry : methodMap.entrySet()) {
 			try {
-				Class dataFetcher = entry.getKey().dataFetcher();
+				Class<? extends IDataFetcher> dataFetcher = entry.getKey().dataFetcher();
 				if (AnnotationUtils.isNullValue(dataFetcher)) {
 					dataFetcher = graphQLObjectMapper.getDefaultMethodDataFetcher();
 				}
@@ -129,9 +131,6 @@ public class DefaultQueryAndMutationFactory implements IQueryFactory, IMutationF
 	 * @throws Exception
 	 */
 	protected List<GraphQLArgument> getMethodArguments(IGraphQLObjectMapper graphQLObjectMapper, Optional<IDataFetcher> dataFetcher, Method method) {
-
-		Type returnType = method.getGenericReturnType();
-
 		ImmutableList.Builder<GraphQLArgument> argumentBuilder = ImmutableList.builder();
 		GraphQLArgument.Builder paramBuilder;
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();

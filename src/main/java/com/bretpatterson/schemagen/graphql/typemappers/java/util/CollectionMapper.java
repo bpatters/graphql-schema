@@ -17,8 +17,9 @@ import java.util.Collection;
  */
 @GraphQLTypeMapper(type = Collection.class)
 public class CollectionMapper implements IGraphQLTypeMapper {
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class typeClass = graphQLObjectMapper.getClassFromType(type);
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+		Class<?> typeClass = graphQLObjectMapper.getClassFromType(type);
 		return Collection.class.isAssignableFrom(typeClass);
 	}
 

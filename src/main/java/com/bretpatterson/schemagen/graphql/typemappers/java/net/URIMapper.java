@@ -17,7 +17,8 @@ import java.net.URI;
 @GraphQLTypeMapper(type=URI.class)
 public class URIMapper implements IGraphQLTypeMapper {
 
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
 		return type == URI.class;
 	}
 	@Override

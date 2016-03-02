@@ -18,22 +18,23 @@ public class SimpleTypeNamingStrategyTest {
 	IGraphQLObjectMapper graphQLObjectMapper = mock(IGraphQLObjectMapper.class);
 
 	private class Connection<T> {
-		T field;
+		@SuppressWarnings("unused")
+        T field;
 	}
 
-	@Test
+	@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
+    @Test
 	public void TestSimpleType() {
 		ITypeNamingStrategy strategy = new SimpleTypeNamingStrategy();
 
-
-		given(graphQLObjectMapper.getClassFromType(eq(String.class))).willReturn(String.class);
+		given(graphQLObjectMapper.getClassFromType(eq(String.class))).willReturn((Class) String.class);
 
 		assertEquals("String", strategy.getTypeName(graphQLObjectMapper, String.class));
 
-		given(graphQLObjectMapper.getClassFromType(eq(new TypeToken<RelayConnection<String>>(){}.getType()))).willReturn(RelayConnection.class);
+		given(graphQLObjectMapper.getClassFromType(eq(new TypeToken<RelayConnection<String>>(){}.getType()))).willReturn((Class) RelayConnection.class);
 		assertEquals("RelayConnection_String", strategy.getTypeName(graphQLObjectMapper, new TypeToken<RelayConnection<String>>(){}.getType()));
 
-		given(graphQLObjectMapper.getClassFromType(eq(new TypeToken<Connection<String>>(){}.getType()))).willReturn(Connection.class);
+		given(graphQLObjectMapper.getClassFromType(eq(new TypeToken<Connection<String>>(){}.getType()))).willReturn((Class) Connection.class);
 		assertEquals("Connection_String", strategy.getTypeName(graphQLObjectMapper, new TypeToken<Connection<String>>(){}.getType()));
 	}
 }

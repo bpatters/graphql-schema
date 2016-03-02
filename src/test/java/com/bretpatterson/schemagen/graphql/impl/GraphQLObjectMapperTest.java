@@ -38,6 +38,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by bpatterson on 1/23/16.
  */
+@SuppressWarnings("serial")
 public class GraphQLObjectMapperTest {
 
 	@Mock
@@ -59,7 +60,7 @@ public class GraphQLObjectMapperTest {
 				typeNamingStrategy,
 				Optional.<IDataFetcherFactory> absent(),
 				Optional.<Class<? extends IDataFetcher>> absent(),
-				ImmutableList.<Class> of());
+				ImmutableList.<Class<?>> of());
 
 	}
 
@@ -69,7 +70,7 @@ public class GraphQLObjectMapperTest {
 				Optional.<ITypeNamingStrategy> absent(),
 				Optional.<IDataFetcherFactory> absent(),
 				Optional.<Class<? extends IDataFetcher>> absent(),
-				ImmutableList.<Class> of());
+				ImmutableList.<Class<?>> of());
 
 	}
 
@@ -80,7 +81,7 @@ public class GraphQLObjectMapperTest {
 				Optional.<ITypeNamingStrategy> of(new FullTypeNamingStrategy()),
 				Optional.<IDataFetcherFactory> absent(),
 				Optional.<Class<? extends IDataFetcher>> absent(),
-				ImmutableList.<Class> of());
+				ImmutableList.<Class<?>> of());
 		assertTypeMapping(Scalars.GraphQLString.getName(), Scalars.GraphQLString, graphQLObjectMapper.getOutputType(String.class));
 		assertTypeMapping(Scalars.GraphQLInt.getName(), Scalars.GraphQLInt, graphQLObjectMapper.getOutputType(Integer.class));
 		assertTypeMapping(Scalars.GraphQLInt.getName(), Scalars.GraphQLInt, graphQLObjectMapper.getOutputType(int.class));
@@ -136,23 +137,32 @@ public class GraphQLObjectMapperTest {
 
 	private class InnerGeneric<R, S> {
 
-		R rType;
-		S sType;
+		@SuppressWarnings("unused")
+        R rType;
+		@SuppressWarnings("unused")
+        S sType;
 	}
 
 	private class AnotherGenericObjectTest<R, S> {
 
-		R rType;
-		S sType;
+		@SuppressWarnings("unused")
+        R rType;
+		@SuppressWarnings("unused")
+        S sType;
 	}
 
 	private class GenericObjectTest<R, S> {
 
-		AnotherGenericObjectTest<S, R> srObject;
-		InnerGeneric<Float, Boolean> innerFloatDouble;
-		List<R> rList;
-		R rType;
-		S sType;
+		@SuppressWarnings("unused")
+        AnotherGenericObjectTest<S, R> srObject;
+		@SuppressWarnings("unused")
+        InnerGeneric<Float, Boolean> innerFloatDouble;
+		@SuppressWarnings("unused")
+        List<R> rList;
+		@SuppressWarnings("unused")
+        R rType;
+		@SuppressWarnings("unused")
+        S sType;
 	}
 
 	@Test
@@ -206,7 +216,8 @@ public class GraphQLObjectMapperTest {
 
 		@GraphQLIgnore
 		private Map<String, String> keyValueStore;
-		private String stringField;
+		@SuppressWarnings("unused")
+        private String stringField;
 	}
 
 	@Test
@@ -266,7 +277,8 @@ public class GraphQLObjectMapperTest {
 
 	private class TestType {
 
-		String myfield;
+		@SuppressWarnings("unused")
+        String myfield;
 	}
 
 	@Test
@@ -386,7 +398,7 @@ public class GraphQLObjectMapperTest {
 		}
 	}
 
-	@Test
+    @Test
 	public void testMethodOnlyFields() {
 		IGraphQLObjectMapper graphQLObjectMapper = newGraphQLObjectMapper(
 				ImmutableList.<IGraphQLTypeMapper> builder().add(new TestTypeMapper()).addAll(GraphQLSchemaBuilder.getDefaultTypeMappers()).build());

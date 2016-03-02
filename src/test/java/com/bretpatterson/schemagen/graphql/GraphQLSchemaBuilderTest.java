@@ -33,8 +33,8 @@ public class GraphQLSchemaBuilderTest {
 	}
 
 	private class TestType {
-
-		String myfield;
+		@SuppressWarnings("unused")
+        String myfield;
 	}
 
 	@GraphQLController
@@ -88,7 +88,8 @@ public class GraphQLSchemaBuilderTest {
 		assertEquals("RenamedTestInputType_Input", queryType.getArgument("test").getType().getName());
 	}
 
-	@Test
+	@SuppressWarnings("unchecked")
+    @Test
 	public void testMutation() {
 		GraphQLSchema schema = GraphQLSchemaBuilder.newBuilder()
 				.registerTypeFactory(new JacksonTypeFactory(new ObjectMapper()))
@@ -101,13 +102,13 @@ public class GraphQLSchemaBuilderTest {
 
 		ExecutionResult result = new GraphQL(schema).execute("mutation M { name(name: \"The new name\") }");
 
-		String newName = (String) ((Map) result.getData()).get("name");
+		String newName = ((Map<String, String>) result.getData()).get("name");
 		assertEquals(0, result.getErrors().size());
 		assertEquals("The new name", newName);
 
 		result = new GraphQL(schema).execute("query Q { name }");
 
-		newName = (String) ((Map) result.getData()).get("name");
+		newName = ((Map<String, String>) result.getData()).get("name");
 		assertEquals(0, result.getErrors().size());
 		assertEquals("The new name", newName);
 	}
