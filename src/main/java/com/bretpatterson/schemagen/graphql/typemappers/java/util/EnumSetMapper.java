@@ -16,19 +16,20 @@ import java.util.EnumSet;
  */
 @GraphQLTypeMapper(type = EnumSet.class)
 public class EnumSetMapper implements IGraphQLTypeMapper {
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class typeClass = graphQLObjectMapper.getClassFromType(type);
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+		Class<?> typeClass = graphQLObjectMapper.getClassFromType(type);
 		return EnumSet.class.isAssignableFrom(typeClass);
 	}
 
 	@Override
 	public GraphQLOutputType getOutputType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class classType = (Class) type;
-		Class enumClassType = classType.getComponentType();
+		Class<?> classType = (Class<?>) type;
+		Class<?> enumClassType = classType.getComponentType();
 		GraphQLEnumType.Builder enumType = GraphQLEnumType.newEnum()
 				.name(graphQLObjectMapper.getTypeNamingStrategy().getTypeName(graphQLObjectMapper, enumClassType));
 
-		for (Object value : EnumSet.allOf(enumClassType)) {
+		for (Object value : enumClassType.getEnumConstants()) {
 			enumType.value(value.toString(), value);
 		}
 		return new GraphQLList(enumType.build());
@@ -37,12 +38,12 @@ public class EnumSetMapper implements IGraphQLTypeMapper {
 
 	@Override
 	public GraphQLInputType getInputType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class classType = (Class) type;
-		Class enumClassType = classType.getComponentType();
+		Class<?> classType = (Class<?>) type;
+		Class<?> enumClassType = classType.getComponentType();
 		GraphQLEnumType.Builder enumType = GraphQLEnumType.newEnum()
 				.name(graphQLObjectMapper.getTypeNamingStrategy().getTypeName(graphQLObjectMapper, enumClassType));
 
-		for (Object value : EnumSet.allOf(enumClassType)) {
+		for (Object value : enumClassType.getEnumConstants()) {
 			enumType.value(value.toString(), value);
 		}
 		return new GraphQLList(enumType.build());

@@ -57,7 +57,7 @@ public interface IGraphQLObjectMapper {
 	 * @param type
 	 * @return
 	 */
-	Class getClassFromType(Type type);
+	Class<?> getClassFromType(Type type);
 
 	/**
 	 * Returns all input types created.

@@ -9,8 +9,9 @@ import java.lang.reflect.Type;
  */
 public class FullTypeNamingStrategy extends SimpleTypeNamingStrategy {
 
-	public String getTypeName(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class theClass = graphQLObjectMapper.getClassFromType(type);
+	@Override
+    public String getTypeName(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+		Class<?> theClass = graphQLObjectMapper.getClassFromType(type);
 		String typeName = super.getTypeName(graphQLObjectMapper, type);
 
 		if (theClass.getPackage() != null) {

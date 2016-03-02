@@ -18,10 +18,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class GameManager implements IGameFactory, IUserFactory {
 	GameDAO gameDAO = new GameDAO();
 
-	public IGame newGame() {
+	@Override
+    public IGame newGame() {
 		return new Game();
 	}
-	public IUser newUser() {
+	@Override
+    public IUser newUser() {
 		return new User();
 	}
 

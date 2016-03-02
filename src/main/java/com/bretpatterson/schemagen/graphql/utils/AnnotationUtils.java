@@ -1,21 +1,16 @@
 package com.bretpatterson.schemagen.graphql.utils;
 
-import com.bretpatterson.schemagen.graphql.annotations.GraphQLQuery;
 import com.bretpatterson.schemagen.graphql.datafetchers.DefaultMethodDataFetcher;
-import com.bretpatterson.schemagen.graphql.datafetchers.IDataFetcher;
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
-import graphql.schema.GraphQLFieldDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,7 +23,7 @@ public class AnnotationUtils {
 	private static ClassLoader classLoader;
 	private static ClassPath classPath;
 
-	public final static class DEFAULT_NULL_CLASS extends DefaultMethodDataFetcher {};
+	public final static class DEFAULT_NULL_CLASS extends DefaultMethodDataFetcher {}
 
 	static {
 		try {
@@ -38,7 +33,9 @@ public class AnnotationUtils {
 			Throwables.propagate(ex);
 		}
 	}
-	public static <T> T findAnnotation(Annotation[] annotations, Class<T> type) {
+	
+	@SuppressWarnings("unchecked")
+    public static <T> T findAnnotation(Annotation[] annotations, Class<T> type) {
 		for (Annotation annotation : annotations) {
 			if (annotation.annotationType() == type) {
 				return (T) annotation;
@@ -47,8 +44,8 @@ public class AnnotationUtils {
 		return null;
 	}
 
-	public static <T extends Annotation> Map<Class, T> getClassesWithAnnotation(Class<T> annotation, String packageName) {
-		ImmutableMap.Builder<Class, T> results = ImmutableMap.builder();
+	public static <T extends Annotation> Map<Class<?>, T> getClassesWithAnnotation(Class<T> annotation, String packageName) {
+		ImmutableMap.Builder<Class<?>, T> results = ImmutableMap.builder();
 		try {
 			ImmutableSet<ClassPath.ClassInfo> classes = classPath.getTopLevelClassesRecursive(packageName);
 			for (ClassPath.ClassInfo info : classes) {
@@ -70,7 +67,7 @@ public class AnnotationUtils {
 		return results.build();
 	}
 
-	public static <T extends Annotation> Map<T, Method> getMethodsWithAnnotation(Class targetClass, Class<T> annotationClass) {
+	public static <T extends Annotation> Map<T, Method> getMethodsWithAnnotation(Class<?> targetClass, Class<T> annotationClass) {
 		ImmutableMap.Builder<T, Method> methods = ImmutableMap.builder();
 
 		for (Method method : targetClass.getDeclaredMethods()) {
@@ -88,7 +85,7 @@ public class AnnotationUtils {
 		return DEFAULT_NULL.equals(value);
 	}
 
-	public static boolean isNullValue(Class value) {
+	public static boolean isNullValue(Class<?> value) {
 		return DEFAULT_NULL_CLASS.class.equals(value);
 	}
 }

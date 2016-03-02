@@ -19,12 +19,12 @@ public @interface GraphQLTypeMapper{
 	 * The Class this type mapper knows how to handle.
 	 * @return
 	 */
-	Class type();
+	Class<?> type();
 
 
 	/**
 	 * Allows you to override the default datafetcher for this data type.
 	 * @return
 	 */
-	Class dataFetcher() default AnnotationUtils.DEFAULT_NULL_CLASS.class;
+	Class<? extends IDataFetcher> dataFetcher() default AnnotationUtils.DEFAULT_NULL_CLASS.class;
 }

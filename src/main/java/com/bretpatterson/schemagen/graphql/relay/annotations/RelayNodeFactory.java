@@ -17,5 +17,5 @@ public @interface RelayNodeFactory {
 	 * Types of objects this node factory implements.
 	 * @return
 	 */
-	Class[] types();
+	Class<?>[] types();
 }

@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import graphql.schema.PropertyDataFetcher;
-
 import java.lang.reflect.Type;
 import java.util.Collection;
 
@@ -22,7 +20,7 @@ public class CollectionConverterDataFetcher implements IDataFetcher {
 
 	@Override
 	public Object get(DataFetchingEnvironment environment) {
-		Collection rv = (Collection) parentDataFetcher.get(environment);
+		Collection<?> rv = (Collection<?>) parentDataFetcher.get(environment);
 
 		if (rv == null) {
 			return ImmutableList.of();

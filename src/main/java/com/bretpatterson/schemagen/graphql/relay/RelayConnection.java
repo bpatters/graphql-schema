@@ -13,7 +13,7 @@ public class RelayConnection<T> {
 		return edges;
 	}
 
-	public RelayConnection setEdges(List<Edge<T>> edges) {
+	public RelayConnection<T> setEdges(List<Edge<T>> edges) {
 		this.edges = edges;
 
 		return this;
@@ -23,7 +23,7 @@ public class RelayConnection<T> {
 		return pageInfo;
 	}
 
-	public RelayConnection setPageInfo(PageInfo pageInfo) {
+	public RelayConnection<T> setPageInfo(PageInfo pageInfo) {
 		this.pageInfo = pageInfo;
 
 		return this;

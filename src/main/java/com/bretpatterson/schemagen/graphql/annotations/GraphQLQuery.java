@@ -1,10 +1,8 @@
 package com.bretpatterson.schemagen.graphql.annotations;
 
 import com.bretpatterson.schemagen.graphql.datafetchers.IDataFetcher;
-import com.bretpatterson.schemagen.graphql.datafetchers.IMethodDataFetcher;
 import com.bretpatterson.schemagen.graphql.datafetchers.DefaultMethodDataFetcher;
 import com.bretpatterson.schemagen.graphql.utils.AnnotationUtils;
-import graphql.schema.DataFetcher;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,5 +28,5 @@ public @interface GraphQLQuery {
 	 * The data fetcher to use for this field. Defaults to {@link DefaultMethodDataFetcher}
 	 * @return
 	 */
-	Class dataFetcher() default AnnotationUtils.DEFAULT_NULL_CLASS.class;
+	Class<? extends IDataFetcher> dataFetcher() default AnnotationUtils.DEFAULT_NULL_CLASS.class;
 }

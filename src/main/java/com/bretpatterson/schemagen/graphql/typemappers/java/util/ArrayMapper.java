@@ -16,20 +16,21 @@ import java.lang.reflect.Type;
  */
 @GraphQLTypeMapper(type = Array.class)
 public class ArrayMapper implements IGraphQLTypeMapper {
-	public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class typeClass = graphQLObjectMapper.getClassFromType(type);
+	@Override
+    public boolean handlesType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
+		Class<?> typeClass = graphQLObjectMapper.getClassFromType(type);
 		return Array.class.isAssignableFrom(typeClass);
 	}
 
 	@Override
 	public GraphQLOutputType getOutputType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class classType = (Class) type;
+		Class<?> classType = (Class<?>) type;
 		return new GraphQLList(graphQLObjectMapper.getOutputType(classType.getComponentType()));
 	}
 
 	@Override
 	public GraphQLInputType getInputType(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
-		Class classType = (Class) type;
+		Class<?> classType = (Class<?>) type;
 		return new GraphQLList(graphQLObjectMapper.getInputType(classType.getComponentType()));
 	}
 

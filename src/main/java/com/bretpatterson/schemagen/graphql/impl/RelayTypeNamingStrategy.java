@@ -14,7 +14,7 @@ public class RelayTypeNamingStrategy extends SimpleTypeNamingStrategy {
 	@Override
 	public String getTypeName(IGraphQLObjectMapper graphQLObjectMapper, Type type) {
 		String typeString;
-		Class theClass = graphQLObjectMapper.getClassFromType(type);
+		Class<?> theClass = graphQLObjectMapper.getClassFromType(type);
 
 		GraphQLTypeName typeName = (GraphQLTypeName) theClass.getAnnotation(GraphQLTypeName.class);
 		if (typeName != null) {

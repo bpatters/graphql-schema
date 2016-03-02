@@ -52,7 +52,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +71,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 	private IGraphQLTypeCache<GraphQLInputType> inputTypeCache = new DefaultGraphQLTypeCache<>();
 	private ITypeFactory typeFactory;
 	private ITypeNamingStrategy typeNamingStrategy = new SimpleTypeNamingStrategy();
-	private List<Class> relayNodeTypes;
+	private List<Class<?>> relayNodeTypes;
 	private Stack<Map<String, Type>> typeArguments = new Stack<>();
 	private Set<GraphQLType> inputTypes = Sets.newHashSet();
 	private String nodeTypeName;
@@ -80,7 +79,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 	private Class<? extends IDataFetcher> defaultMethodDataFetcher;
 
 	public GraphQLObjectMapper(ITypeFactory typeFactory, List<IGraphQLTypeMapper> graphQLTypeMappers, Optional<ITypeNamingStrategy> typeNamingStrategy,
-			Optional<IDataFetcherFactory> dataFetcherFactory, Optional<Class<? extends IDataFetcher>> defaultMethodDataFetcher, List<Class> relayNodeTypes) {
+			Optional<IDataFetcherFactory> dataFetcherFactory, Optional<Class<? extends IDataFetcher>> defaultMethodDataFetcher, List<Class<?>> relayNodeTypes) {
 
 		this.typeFactory = typeFactory;
 		this.relayNodeTypes = relayNodeTypes;
@@ -119,8 +118,8 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 	}
 
 	private void buildGenericArgumentTypeMap(ParameterizedType type) {
-		Class rawClass = (Class) type.getRawType();
-		TypeVariable[] typeVariables = rawClass.getTypeParameters();
+		Class<?> rawClass = (Class<?>) type.getRawType();
+		TypeVariable<?>[] typeVariables = rawClass.getTypeParameters();
 		Type[] arguments = type.getActualTypeArguments();
 		for (int i = 0; i < typeVariables.length; i++) {
 			// field definitions can cause us to come in here so we ignore type variable argument types.
@@ -136,7 +135,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 				// }
 				// we need to update the current with the type from the parents map, so we pop, update, push
 				Map<String, Type> current = typeArguments.pop();
-				current.put(typeVariables[i].getName(), typeArguments.peek().get(((TypeVariable) arguments[i]).getName()));
+				current.put(typeVariables[i].getName(), typeArguments.peek().get(((TypeVariable<?>) arguments[i]).getName()));
 				typeArguments.push(current);
 			}
 		}
@@ -154,7 +153,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 
 	private Optional<GraphQLFieldDefinition> getFieldType(Type type, Method method) {
 		Type fieldType = method.getGenericReturnType();
-		Class fieldTypeClass = getClassFromType(fieldType);
+		Class<?> fieldTypeClass = getClassFromType(fieldType);
 		Optional<String> fieldName = getFieldNameFromMethod(method);
 		GraphQLOutputType graphQLFieldType = getOutputType(fieldType);
 		Class<? extends IDataFetcher> dataFetcherClass = getDefaultMethodDataFetcher();
@@ -178,7 +177,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		GraphQLDataFetcher dataFetcherAnnotation = method.getAnnotation(GraphQLDataFetcher.class);
 		// next check field for a datafetcher annotation in case it's not on the method
 		if (dataFetcherAnnotation == null) {
-			Class typeClass = getClassFromType(type);
+			Class<?> typeClass = getClassFromType(type);
 			try {
 				Field field = typeClass.getDeclaredField(fieldName.get());
 				if (field != null) {
@@ -224,7 +223,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		} else {
 			LOGGER.info("Processing types {} field {}  ", type, field);
 			try {
-				Class fieldTypeClass = getClassFromType(field.getGenericType());
+				Class<?> fieldTypeClass = getClassFromType(field.getGenericType());
 				GraphQLOutputType graphQLFieldType = getOutputType(field.getGenericType());
 				GraphQLFieldDefinition.Builder builder = GraphQLFieldDefinition.newFieldDefinition().name(field.getName()).type(graphQLFieldType);
 				Class<? extends IDataFetcher> dataFetcherClass = null;
@@ -313,7 +312,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 	@Override
 	public GraphQLOutputType getOutputType(Type type) {
 		GraphQLOutputType rv;
-		Class classType;
+		Class<?> classType;
 		String typeName = this.getTypeNamingStrategy().getTypeName(this, type);
 
 		if (getOutputTypeCache().containsKey(typeName)) {
@@ -326,7 +325,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType parameterizedType = (ParameterizedType) type;
 			Type rawType = parameterizedType.getRawType();
-			Class rawClass = (Class) rawType;
+			Class<?> rawClass = (Class<?>) rawType;
 
 			typeMapper = getCustomTypeMapper(rawClass);
 			if (typeMapper.isPresent()) {
@@ -335,7 +334,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 				return buildObject(type, rawClass);
 			}
 		} else if (type instanceof TypeVariable) {
-			TypeVariable vType = (TypeVariable) type;
+			TypeVariable<?> vType = (TypeVariable<?>) type;
 			return getOutputType(typeArguments.peek().get(vType.getName()));
 		} else {
 			classType = getClassFromType(type);
@@ -345,7 +344,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 				rv = getOutputTypeCache().put(typeName, graphQLType.get());
 			} else if (classType.isEnum()) {
 				GraphQLEnumType.Builder enumType = GraphQLEnumType.newEnum().name(typeNamingStrategy.getTypeName(this, type));
-				for (Object value : EnumSet.allOf(classType)) {
+				for (Object value : classType.getEnumConstants()) {
 					enumType.value(value.toString(), value);
 				}
 				rv = getOutputTypeCache().put(typeName, enumType.build());
@@ -367,7 +366,8 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		return outputTypeCache;
 	}
 
-	public ITypeFactory getTypeFactory() {
+	@Override
+    public ITypeFactory getTypeFactory() {
 		return this.typeFactory;
 	}
 
@@ -391,7 +391,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		}
 	}
 
-	private Optional<GraphQLScalarType> getIfPrimitiveType(Class classType) {
+	private Optional<GraphQLScalarType> getIfPrimitiveType(Class<?> classType) {
 		GraphQLScalarType rv = null;
 		// native types
 		if (Integer.class.isAssignableFrom(classType) || classType.isAssignableFrom(int.class)) {
@@ -411,7 +411,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		return Optional.fromNullable(rv);
 	}
 
-	private GraphQLObjectType buildObject(Type type, Class classType) {
+	private GraphQLObjectType buildObject(Type type, Class<?> classType) {
 		GraphQLObjectType rv;
 		try {
 			// object types we create an object type and then recursively call ourselves to get the field types
@@ -421,7 +421,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 			ImmutableList.Builder<GraphQLFieldDefinition> fields = ImmutableList.builder();
 
 			getOutputTypeCache().put(typeName, glTypeReference);
-			Class classItem = classType;
+			Class<?> classItem = classType;
 			Optional<GraphQLController> graphQLQueryable = Optional.fromNullable((GraphQLController) classItem.getAnnotation(GraphQLController.class));
 			Optional<IQueryFactory> queryFactory = Optional.absent();
 			Object objectInstance = null;
@@ -484,7 +484,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		return rv;
 	}
 
-	Collection<GraphQLFieldDefinition> getGraphQLFieldDefinitions(Type type, Class classItem) {
+	Collection<GraphQLFieldDefinition> getGraphQLFieldDefinitions(Type type, Class<?> classItem) {
 		Map<String, GraphQLFieldDefinition> fieldDefinitions = Maps.newHashMap();
 		Optional<GraphQLFieldDefinition> fieldDefinitionOptional;
 		Set<String> ignoredFields = Sets.newHashSet();
@@ -547,7 +547,7 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		return interfaceTypeMappers;
 	}
 
-	public List<Class> getRelayNodeTypes() {
+	public List<Class<?>> getRelayNodeTypes() {
 		return relayNodeTypes;
 	}
 
@@ -556,37 +556,43 @@ public class GraphQLObjectMapper implements IGraphQLObjectMapper, TypeResolver {
 		return (GraphQLObjectType) getOutputType(object.getClass());
 	}
 
-	public Class getClassFromType(Type type) {
+	@Override
+    public Class<?> getClassFromType(Type type) {
 
 		if (type instanceof ParameterizedType) {
-			return (Class) ((ParameterizedType) type).getRawType();
+			return (Class<?>) ((ParameterizedType) type).getRawType();
 		} else if (type instanceof TypeVariable) {
-			return getClassFromType(typeArguments.peek().get(((TypeVariable) type).getName()));
+			return getClassFromType(typeArguments.peek().get(((TypeVariable<?>) type).getName()));
 		} else if (type instanceof WildcardType) {
 			// @TODO do a better job of wild card types here
 			return getClassFromType(((WildcardType) type).getLowerBounds()[0]);
 		} else {
-			return (Class) type;
+			return (Class<?>) type;
 		}
 	}
 
-	public Set<GraphQLType> getInputTypes() {
+	@Override
+    public Set<GraphQLType> getInputTypes() {
 		return inputTypes;
 	}
 
-	public IDataFetcherFactory getDataFetcherFactory() {
+	@Override
+    public IDataFetcherFactory getDataFetcherFactory() {
 		return dataFetcherFactory;
 	}
 
-	public void setDataFetcherFactory(IDataFetcherFactory dataFetcherFactory) {
+	@Override
+    public void setDataFetcherFactory(IDataFetcherFactory dataFetcherFactory) {
 		this.dataFetcherFactory = dataFetcherFactory;
 	}
 
-	public Class<? extends IDataFetcher> getDefaultMethodDataFetcher() {
+	@Override
+    public Class<? extends IDataFetcher> getDefaultMethodDataFetcher() {
 		return defaultMethodDataFetcher;
 	}
 
-	public void setDefaultMethodDataFetcher(Class<? extends IDataFetcher> defaultMethodDataFetcher) {
+	@Override
+    public void setDefaultMethodDataFetcher(Class<? extends IDataFetcher> defaultMethodDataFetcher) {
 		this.defaultMethodDataFetcher = defaultMethodDataFetcher;
 	}
 }

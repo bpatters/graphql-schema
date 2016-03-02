@@ -54,7 +54,7 @@ public class SpringDataFetcherFactory extends DefaultDataFetcherFactory {
 			final Object targetObject,
 			final Method method,
 			final String fieldName,
-			final Class dataFetcher) {
+			final Class<? extends IDataFetcher> dataFetcher) {
 		checkNotNull(method);
 		SpringDataFetcher dataFetcherObject = null;
 		try {
