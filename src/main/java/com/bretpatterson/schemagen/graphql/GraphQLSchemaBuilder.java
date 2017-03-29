@@ -69,7 +69,7 @@ public class GraphQLSchemaBuilder {
 	private ClassPath classPath;
 	private boolean relayEnabled = false;
 
-	protected GraphQLSchemaBuilder() {
+	public GraphQLSchemaBuilder() {
 		this.rootQueryBuilder = GraphQLObjectType.newObject().name("Query").description("Root of Query Schema");
 		this.rootMutationBuilder = GraphQLObjectType.newObject().name("Mutation").description("Root of Mutation Schema");
 		this.defaultTypeConverters = getDefaultTypeConverters();
@@ -190,7 +190,7 @@ public class GraphQLSchemaBuilder {
 	}
 
 	@VisibleForTesting
-	protected List<IGraphQLTypeMapper> getDefaultTypeMappers() {
+	public static List<IGraphQLTypeMapper> getDefaultTypeMappers() {
 		// install all of the default type mappers we include in our packages
 		ImmutableList.Builder<IGraphQLTypeMapper> builder = ImmutableList.builder();
 		try {

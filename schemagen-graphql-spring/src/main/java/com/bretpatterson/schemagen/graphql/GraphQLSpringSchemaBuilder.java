@@ -21,9 +21,10 @@ public class GraphQLSpringSchemaBuilder extends GraphQLSchemaBuilder {
 
         this.applicationContext = applicationContext;
         this.registerDataFetcherFactory(new SpringDataFetcherFactory(applicationContext));
+        this.registerTypeMappers(getDefaultTypeMappers());
     }
 
-    public List<IGraphQLTypeMapper> getDefaultTypeMappers() {
+    public static List<IGraphQLTypeMapper> getDefaultTypeMappers() {
         ImmutableList.Builder<IGraphQLTypeMapper> builder = ImmutableList.builder();
 
         ClassPathScanningCandidateComponentProvider scanner =
