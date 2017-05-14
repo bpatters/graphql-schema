@@ -27,6 +27,7 @@ import graphql.schema.GraphQLSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -238,7 +239,8 @@ public class GraphQLSchemaBuilder {
 						// creat root object field with the controllers root object name to hold the queries object wrapper
 						GraphQLFieldDefinition.Builder rootViewField = GraphQLFieldDefinition.newFieldDefinition().name(graphQLController.rootQueriesObjectName()).staticValue(queryHandler);
 						// create field object to contain this controllers query fields
-						GraphQLObjectType.Builder viewerObject = GraphQLObjectType.newObject().name(graphQLController.rootQueriesObjectName());
+						GraphQLObjectType.Builder viewerObject = GraphQLObjectType.newObject().name(
+								Introspector.decapitalize(graphQLController.rootQueriesObjectName()));
 						if (!AnnotationUtils.isNullValue(graphQLController.queryDescription())) {
 							viewerObject.description(graphQLController.queryDescription());
 						}
@@ -257,7 +259,8 @@ public class GraphQLSchemaBuilder {
 						// create root object field with the controllers root object name to hold the mutations object wrapper
 						GraphQLFieldDefinition.Builder rootMutationField = GraphQLFieldDefinition.newFieldDefinition().name(graphQLController.rootMutationsObjectName()).staticValue(queryHandler);
 						// create field object to contain this controllers mutation fields
-						GraphQLObjectType.Builder mutObject = GraphQLObjectType.newObject().name(graphQLController.rootMutationsObjectName());
+						GraphQLObjectType.Builder mutObject = GraphQLObjectType.newObject().name(
+								Introspector.decapitalize(graphQLController.rootMutationsObjectName()));
 						if (!AnnotationUtils.isNullValue(graphQLController.mutationDescription())) {
 							mutObject.description(graphQLController.mutationDescription());
 						}
